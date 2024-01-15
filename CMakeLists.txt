@@ -12,6 +12,8 @@
 	 src/commands_listener.cpp
 	 src/videoData.h
 	 src/videoData.cpp
+	 src/audioThread.h
+	 src/audioThread.cpp	 
      )      
      # Find our pre-installed DPP package (using FindDPP.cmake).
      find_package(DPP REQUIRED)
@@ -22,11 +24,13 @@
          ${DPP_LIBRARIES}
 	 curl
 	 mpg123
+	 
      )
       
      # Include the DPP directories.
      target_include_directories(${PROJECT_NAME} PRIVATE
          ${DPP_INCLUDE_DIR}
+	 
      )
       
      # Set C++ version
