@@ -2,7 +2,7 @@
      cmake_minimum_required(VERSION 3.22)
      # Project name, version and description
      project(discord-bot VERSION 1.0 DESCRIPTION "A discord bot")
-      
+     set(VCPKG_BUILD_TYPE release)
      list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
       
      # Create an executable
@@ -18,12 +18,29 @@
      # Find our pre-installed DPP package (using FindDPP.cmake).
      find_package(DPP REQUIRED)
      find_package(CURL REQUIRED)
-      
+     if(WIN32)
+     find_package(fmt REQUIRED)
+     find_package(mpg123 REQUIRED)
+     find_package(nlohmann_json REQUIRED)
+     find_package(unofficial-getopt-win32 REQUIRED)
+     endif(WIN32)
      # Link the pre-installed DPP package.
      target_link_libraries(${PROJECT_NAME} 
          ${DPP_LIBRARIES}
+	 if(WIN32)
+	 dpp::dpp
+	 fmt::fmt
+	 nlohmann_json::nlohmann_json
+	 CURL::libcurl
+	 MPG123::libmpg123 
+         MPG123::libout123 
+         MPG123::libsyn123
+         unofficial::getopt-win32::getopt
+         endif(WIN32)
+         if(UNIX)
 	 curl
 	 mpg123
+	 endif(UNIX)
 	 
      )
       
