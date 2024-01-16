@@ -69,6 +69,8 @@ void AudioThread::joinThread()
 {
 	thread.join();
 }
+
+
 void AudioThread::run(const dpp::slashcommand_t& event)
 {	
 	while(true){
@@ -92,9 +94,22 @@ void AudioThread::run(const dpp::slashcommand_t& event)
 		extern dpp::cluster bot;
 		bot.message_create(dpp::message(event.command.get_channel().id,"Now playing : " + queue[0].title));
 		std::vector<uint8_t> pcmdata = prepareAudio(name);
-		vc->send_audio_raw((uint16_t*)pcmdata.data(), pcmdata.size());
 		
+		//vc->send_audio_raw((uint16_t*)pcmdata.data(), pcmdata.size());
+		int pos = 0;
+		std::cout << pcmdata.size() << std::endl;
+		std::vector<uint8_t> pcdata(pcmdata.begin(),pcmdata.begin()+3686400);
+		vc->send_audio_raw((uint16_t*)pcdata.data(), pcdata.size());
 		while(vc->is_playing()){
+			if(pos+3686400 <pcmdata.size()){
+				pos+=3686400 ;
+				std::vector<uint8_t> pcdata(pcmdata.begin()+ pos ,pcmdata.begin()+pos+3686400 );
+				vc->send_audio_raw((uint16_t*)pcdata.data(), pcdata.size());
+			}
+			else{
+				std::vector<uint8_t> pcdata(pcmdata.begin()+ pos ,pcmdata.end());
+				vc->send_audio_raw((uint16_t*)pcdata.data(), pcdata.size());
+			}
 			if(skip){
 				vc->stop_audio();
 				skip = 0;
@@ -163,6 +178,10 @@ void AudioThread::findVideo(std::string NAMEVIDEO){
   }
   std::string URL;
   if(type){
+	size_t pos = NAMEVIDEO.find("?v=");
+	if(pos!=-1){
+		NAMEVIDEO = NAMEVIDEO.substr(pos+3);
+	}
 	URL =  "https://www.youtube.com/results?search_query=" + NAMEVIDEO;
   }else{
   	char* NAMEVIDEOCHAR = curl_easy_escape(curl, NAMEVIDEO.c_str(), NAMEVIDEO.length());
@@ -189,20 +208,22 @@ void AudioThread::findVideo(std::string NAMEVIDEO){
 	pos = readBuffer.find(toFind);
 	readBuffer.erase(pos);
 	json j = json::parse(readBuffer);
-	std::string ignoreList[6] = {"radioRenderer","playlistRenderer","channelRenderer","shelfRenderer","reelShelfRenderer","showingResultsForRenderer"};
+	std::string ignoreList[7] = {"radioRenderer","playlistRenderer","channelRenderer","shelfRenderer","reelShelfRenderer","showingResultsForRenderer","didYouMeanRenderer"};
 	int k = j["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]["contents"].size()-1;
 	if(k > 5){k = 5;}
 	for(int i = 0;i<k;i++){
 	    VideoData video;
 		int toBreak = 0;
-		for(int i1 = 0;i1<6;i1++){
+		for(int i1 = 0;i1<7;i1++){
 			if(j["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]["contents"][i].find(ignoreList[i1]) != j["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]["contents"][i].end()){
 				toBreak=1;
 				break;
 			}
 		}
 		if(toBreak){
-			k+=1;
+			if(k>i+1){
+				k+=1;
+			}
 			continue;
 		}
 		video.id = std::string(j["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]["contents"][i]["videoRenderer"]["videoId"]);
