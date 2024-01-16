@@ -16,6 +16,11 @@ extern std::map<std::string,AudioThread> audioPerServer;
 
 void AudioThread::start(const dpp::slashcommand_t& event)
 {	
+    #ifdef _WIN32
+    path = "tmp/discordBot";
+    #elif __linux__
+    path = "/tmp/discordBot";
+    #endif
     thread = std::thread(&AudioThread::run,this,event);
 }
 
