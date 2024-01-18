@@ -9,7 +9,12 @@
 #include <curl/curl.h>
 #include <stdio.h>
 #include <sys/types.h>
+#ifdef _WIN32
+#include <io.h>
+#include <nlohmann/json.hpp>
+#elif __linux__
 #include <unistd.h>
+#endif
 
 extern const std::string path;
 
