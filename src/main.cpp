@@ -1,12 +1,18 @@
-﻿#include <dpp/dpp.h>
+#include <dpp/dpp.h>
 #include <getopt.h>
 #include "commands_listener.h"
 #include "audioThread.h"
 #include <fstream>
 #include <vector>
 
+std::string getToken(){
+	std::fstream file("BOT_TOKEN");
+	std::string line;
+	std::getline(file,line);
+	return line;
+}
 
-const std::string BOT_TOKEN = "MTE4OTMxMzc0MTQ4NjAzNTAyNA.GZDYvb.fXLYovf7yql78Omsm7xdFB9xYeYS5AcuT644Ug";
+const std::string BOT_TOKEN = getToken();
 extern dpp::cluster bot;
 extern const std::string path;
 //variable with stores audioThreads for every server
@@ -40,6 +46,10 @@ int main(int argc, char *argv[]) {
 	//creating a tmp folder if it doesn't exists
 	if(!std::filesystem::exists(path)){
 		std::filesystem::create_directory(path);
+	}
+	if(!std::filesystem::exists("BOT_TOKEN")){
+		std::cout << "file BOT_TOKEN was not found" << std::endl;
+		return -1;
 	}
 	//event loop thats check if some Audiothread leaved and no longer needed
 	std::thread eventLoop([](){
