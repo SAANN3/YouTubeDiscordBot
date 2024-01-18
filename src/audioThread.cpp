@@ -12,6 +12,7 @@
 #ifdef _WIN32
 #include <io.h>
 #include <nlohmann/json.hpp>
+using json = nlohmann::json;
 #elif __linux__
 #include <unistd.h>
 #endif
