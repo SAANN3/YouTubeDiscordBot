@@ -2,6 +2,7 @@
 #define VIDEODATA
 #include <iostream>
 #include <vector>
+//class which represents video and holding some data
 class VideoData{
     public:
         std::string id;

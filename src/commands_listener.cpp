@@ -12,13 +12,12 @@ void Commands_listener::on_commands_create(const dpp::slashcommand_t& event) {
 	dpp::guild server = event.command.get_guild();
 	std::string serverId = server.id.str();
 	auto user_vc = server.voice_members.find(user.id);
+	//bot_vc represents existing voice connection on issuing server
 	auto bot_vc = event.from->get_voice(server.id);
 	if (event.command.get_command_name() == "ping"){
 		event.reply("Pong!");
 	}
 	else if(event.command.get_command_name() == "join"){
-		//check if user in voice channel
-		
 		int result = joinToVc(event);
 		switch(result){
 		case 0:
@@ -79,6 +78,7 @@ void Commands_listener::on_commands_create(const dpp::slashcommand_t& event) {
 			audioPerServer.insert(std::pair(serverId,AudioThread()));
 			audioPerServer[serverId].start(event);
 		}
+		//create buttons based on length of a returned vector
 		std::string audioName = std::get<std::string>(event.get_parameter("audio"));
 		audioPerServer[serverId].findVideo(audioName);
 		std::vector<VideoData> results = audioPerServer[serverId].getSearchResults();
@@ -140,7 +140,6 @@ int Commands_listener::joinToVc(const dpp::slashcommand_t& event)
 			}
 			if(bot_vc->channel_id != user_vc->second.channel_id){
 				return 3;
-				//event.from->disconnect_voice(server.id);
 			}
 		}
 		server.connect_member_voice(user.id,0,1);

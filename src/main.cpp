@@ -8,12 +8,40 @@
 
 const std::string BOT_TOKEN = "MTE4OTMxMzc0MTQ4NjAzNTAyNA.GZDYvb.fXLYovf7yql78Omsm7xdFB9xYeYS5AcuT644Ug";
 extern dpp::cluster bot;
+extern const std::string path;
+//variable with stores audioThreads for every server
 extern std::map<std::string,AudioThread> audioPerServer;
 dpp::cluster bot(BOT_TOKEN, dpp::i_default_intents | dpp::i_message_content);
 std::map<std::string,AudioThread> audioPerServer;
+#ifdef _WIN32
+    const std::string path = "tmp";
+#elif __linux__
+    const std::string path = "/tmp/discordBot";
+#endif
 
 
 int main(int argc, char *argv[]) {
+	
+	int opt;
+	int setup_commands = 0;
+	//registering commands only if we recive -s argument on start
+	while ((opt = getopt(argc, argv, ":s")) !=-1){
+		switch (opt){
+			case 's': 
+				setup_commands = 1; 
+				std::cout << "commands registered" << std::endl;
+				break;
+			case '?':
+      			printf("Missing arg for %c\n", optopt);
+      			break;
+		}
+	}
+	
+	//creating a tmp folder if it doesn't exists
+	if(!std::filesystem::exists(path)){
+		std::filesystem::create_directory(path);
+	}
+	//event loop thats check if some Audiothread leaved and no longer needed
 	std::thread eventLoop([](){
 		while(1){
 			std::vector<std::string> it;
@@ -28,25 +56,12 @@ int main(int argc, char *argv[]) {
 					audioPerServer[it[i]].joinThread();
 					audioPerServer.erase(it[i]);
 				}
+				
 				it.clear();
 			}
  			std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
 	});
-	int opt;
-	int setup_commands = 0;
-	while ((opt = getopt(argc, argv, ":s")) !=-1){
-		switch (opt){
-			case 's': 
-				setup_commands = 1; 
-				std::cout << "commands registered" << std::endl;
-				break;
-			case '?':
-      			printf("Missing arg for %c\n", optopt);
-      			break;
-		}
-	}
-	
 	bot.on_log(dpp::utility::cout_logger());
 	if(setup_commands){
 		bot.on_ready([](const dpp::ready_t& event) {
@@ -67,13 +82,6 @@ int main(int argc, char *argv[]) {
 	}
 	bot.on_slashcommand(&Commands_listener::on_commands_create);
 	bot.on_button_click(&Commands_listener::on_button_click);
-	
-	bot.on_message_create([](const dpp::message_create_t& event) {
-		
-		if (event.msg.content.find("dd") != std::string::npos) {
-			event.reply("kek", true);
-		}
-		});
 	bot.start(dpp::st_wait);
 }
 

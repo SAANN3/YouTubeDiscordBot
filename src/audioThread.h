@@ -19,6 +19,9 @@ class AudioThread
         std::string getListQueue();
         std::vector <VideoData> getSearchResults();
         void findVideo(std::string NAMEVIDEO);
+        //value for removing this instance from audioPerServer map
+        //because if we remove it from thread , it instantly dies and crashing program
+        //also we cant delete it from leave command because bot might still send some audio
         int killNeeded = 0;
        
        
@@ -26,7 +29,6 @@ class AudioThread
         void downloadSong(VideoData video);
         
         std::vector<VideoData> searchResults;
-        std::string path = "/tmp/discordBot";
         
         bool skip = 0;
         bool leave = 0;
