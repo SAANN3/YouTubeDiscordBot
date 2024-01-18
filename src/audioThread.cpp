@@ -163,9 +163,9 @@ void AudioThread::downloadSong(VideoData video)
 	
 	std::string command;
 	#ifdef _WIN32
-    	command = std::string("youtube-dl.exe --extract-audio --audio-format mp3 ") + " -o " + path + "/" + video.id + ".mp3" + " https://www.youtube.com/watch?v=" + video.id;
+    	command = std::string("yt-dlp.exe --extract-audio --audio-format mp3 ") + " -o " + path + "/" + video.id + ".mp3" + " https://www.youtube.com/watch?v=" + video.id;
     #elif __linux__
-    	command = std::string("youtube-dl --extract-audio --audio-format mp3 ") + " -o '" + path + "/" + video.id + ".mp3'" + " 'https://www.youtube.com/watch?v=" + video.id+ "' ";
+    	command = std::string("yt-dlp --extract-audio --audio-format mp3 ") + " -o '" + path + "/" + video.id + ".mp3'" + " 'https://www.youtube.com/watch?v=" + video.id+ "' ";
     #endif
 	system(command.c_str());
 	
