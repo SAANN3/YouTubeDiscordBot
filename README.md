@@ -38,7 +38,7 @@ Then you can invite bot and start playing music with /play
 I used a vcpkg for windows build, if you don't have it you should install it first.
 Then using vcpkg install theese packages
 
-``` dpp curl fmt getopt getopt-win32 libsodium mpg123 nlohmann-json openssl ffmpeg```
+``` dpp curl fmt getopt getopt-win32 libsodium mpg123 nlohmann-json openssl ```
 ```
    git clone https://github.com/SAANN3/YouTubeDiscordBot
    cd YouTubeDiscordBot
