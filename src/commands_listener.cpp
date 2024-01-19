@@ -5,7 +5,7 @@
 
 
 extern std::map<std::string,AudioThread> audioPerServer;
-
+extern dpp::cluster bot;
 
 void Commands_listener::on_commands_create(const dpp::slashcommand_t& event) {
 	dpp::user user = event.command.get_issuing_user();
@@ -106,9 +106,9 @@ void Commands_listener::on_commands_create(const dpp::slashcommand_t& event) {
 		}
 		event.reply(msg);
 		//if given a url there is no need for waiting a button click;
-		if(audioName.find("https://")==-1 && results.size()>0){
+		if(audioName.find("https://")!=-1 && results.size()>0){
 			VideoData selectedVideo = audioPerServer[serverId].getSearchResults()[0];
-			event.reply("You choosed: " + selectedVideo.title);
+			bot.message_create(dpp::message(event.command.get_channel().id,"You choosed: " + selectedVideo.title));
 			audioPerServer[serverId].addSong(selectedVideo);
 		}
 	}
