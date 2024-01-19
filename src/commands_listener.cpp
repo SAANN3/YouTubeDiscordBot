@@ -71,6 +71,9 @@ void Commands_listener::on_commands_create(const dpp::slashcommand_t& event) {
 		if(res == 2){
 			event.reply(user.global_name + ", you're not in a voice channel" );
 		}
+		if(res == 3){
+			event.reply("i'm already on another channel,leave first");
+		}
 		if(res != 0 && res !=1){
 			return;
 		}
@@ -83,6 +86,7 @@ void Commands_listener::on_commands_create(const dpp::slashcommand_t& event) {
 		audioPerServer[serverId].findVideo(audioName);
 		std::vector<VideoData> results = audioPerServer[serverId].getSearchResults();
 		std::string msgOuptut = VideoData::stringFromVector(results);
+		
 		dpp::message msg(event.command.channel_id, msgOuptut);
 		if(results.size()>0){
 			dpp::component row;
@@ -100,8 +104,13 @@ void Commands_listener::on_commands_create(const dpp::slashcommand_t& event) {
 		else{
 			msg = dpp::message(event.command.channel_id,"Nothing was found");
 		}
-		
 		event.reply(msg);
+		//if given a url there is no need for waiting a button click;
+		if(audioName.find("https://")==-1 && results.size()>0){
+			VideoData selectedVideo = audioPerServer[serverId].getSearchResults()[0];
+			event.reply("You choosed: " + selectedVideo.title);
+			audioPerServer[serverId].addSong(selectedVideo);
+		}
 	}
 		
 }
@@ -116,7 +125,7 @@ void Commands_listener::on_button_click(const dpp::button_click_t& event){
 		return ;
 	}
 	if(buttonId > audioPerServer[serverId].getSearchResults().size()){
-		event.reply("Value outdated");
+		event.reply("Value missing");
 		return;
 	}
 	VideoData selectedVideo = audioPerServer[serverId].getSearchResults()[buttonId];

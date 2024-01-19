@@ -6,18 +6,25 @@
 #include <vector>
 
 std::string getToken(){
+	if(!std::filesystem::exists("BOT_TOKEN")){
+		std::cout << "file BOT_TOKEN was not found" << std::endl;
+		std::cout << "press any key to exit" << std::endl;
+		std::cin.get();
+		exit(0);
+	}
 	std::fstream file("BOT_TOKEN");
 	std::string line;
 	std::getline(file,line);
 	return line;
 }
-
 const std::string BOT_TOKEN = getToken();
+
+//Global declaration of a bot vairable
 extern dpp::cluster bot;
+dpp::cluster bot(BOT_TOKEN, dpp::i_default_intents | dpp::i_message_content);
 extern const std::string path;
 //variable with stores audioThreads for every server
 extern std::map<std::string,AudioThread> audioPerServer;
-dpp::cluster bot(BOT_TOKEN, dpp::i_default_intents | dpp::i_message_content);
 std::map<std::string,AudioThread> audioPerServer;
 #ifdef _WIN32
     const std::string path = "tmp";
@@ -47,11 +54,8 @@ int main(int argc, char *argv[]) {
 	if(!std::filesystem::exists(path)){
 		std::filesystem::create_directory(path);
 	}
-	if(!std::filesystem::exists("BOT_TOKEN")){
-		std::cout << "file BOT_TOKEN was not found" << std::endl;
-		return -1;
-	}
-	//event loop thats check if some Audiothread leaved and no longer needed
+	
+	//event loop thats check if some Audiothread leaved voice channel and no longer needed
 	std::thread eventLoop([](){
 		while(1){
 			std::vector<std::string> it;
@@ -74,6 +78,7 @@ int main(int argc, char *argv[]) {
 	});
 	bot.on_log(dpp::utility::cout_logger());
 	if(setup_commands){
+		//if -s variable passed we send discord all commands declaration
 		bot.on_ready([](const dpp::ready_t& event) {
 		if (dpp::run_once<struct register_bot_commands>()) {
 			dpp::slashcommand playCommand("play","Plays a music",bot.me.id);
