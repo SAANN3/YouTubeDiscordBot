@@ -29,6 +29,7 @@ Then you can invite bot and start playing music with /play
   git clone https://github.com/SAANN3/YouTubeDiscordBot
   cd YouTubeDiscordBot
   mkdir build
+  cd build && cmake .. && cd ..
   cmake --build build/ -j4
   
 ```
