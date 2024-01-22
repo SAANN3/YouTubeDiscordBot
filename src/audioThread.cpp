@@ -108,6 +108,12 @@ void AudioThread::run(const dpp::slashcommand_t& event)
 		int chunkLength = 3686400;
 		
 		//send silence to enter loop
+		bot.on_voice_ready([this](const dpp::voice_ready_t& event) {
+			readyToSend = 1;
+			});
+		while (!readyToSend) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(250));
+		}
 		vc->send_silence(60);
 		int fullPlayed = 0;
 		while(vc->is_playing()){
