@@ -42,6 +42,7 @@ Then using vcpkg install theese packages
 ```
    git clone https://github.com/SAANN3/YouTubeDiscordBot
    cd YouTubeDiscordBot
+   rm cmake
    mkdir build
    cd build
    cmake -DCMAKE_TOOLCHAIN_FILE="PATH TO VCPKG.cmake" ..
