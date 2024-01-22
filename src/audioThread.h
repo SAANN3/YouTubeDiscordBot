@@ -29,7 +29,7 @@ class AudioThread
         void downloadSong(VideoData video);
         
         std::vector<VideoData> searchResults;
-        
+        int readyToSend = 0;
         bool skip = 0;
         bool leave = 0;
         std::vector<VideoData> queue;
