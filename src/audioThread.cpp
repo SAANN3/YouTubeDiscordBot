@@ -98,7 +98,7 @@ void AudioThread::run(const dpp::slashcommand_t& event)
 			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(250));
 		}
-		dpp::discord_voice_client *vc = event.from->get_voice(event.command.guild_id)->voiceclient;
+		
 		std::string name = path +"/" + queue[0].id + ".mp3";
 		downloadSong(queue[0]);
 		extern dpp::cluster bot;
@@ -113,7 +113,9 @@ void AudioThread::run(const dpp::slashcommand_t& event)
 			});
 		while (!readyToSend) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(250));
+			
 		}
+		dpp::discord_voice_client* vc = event.from->get_voice(event.command.guild_id)->voiceclient;
 		vc->send_silence(60);
 		int fullPlayed = 0;
 		while(vc->is_playing()){
