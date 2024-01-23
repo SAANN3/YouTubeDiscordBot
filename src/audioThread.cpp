@@ -106,16 +106,13 @@ void AudioThread::run(const dpp::slashcommand_t& event)
 		std::vector<uint8_t> pcmdata = prepareAudio(name);
 		int pos = 0;
 		int chunkLength = 3686400;
-		
+		dpp::discord_voice_client* vc = event.from->get_voice(event.command.guild_id)->voiceclient;
 		//send silence to enter loop
-		bot.on_voice_ready([this](const dpp::voice_ready_t& event) {
-			readyToSend = 1;
-			});
-		while (!readyToSend) {
+		while (!vc->is_ready()) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(250));
 			
 		}
-		dpp::discord_voice_client* vc = event.from->get_voice(event.command.guild_id)->voiceclient;
+		
 		vc->send_silence(60);
 		int fullPlayed = 0;
 		while(vc->is_playing()){
