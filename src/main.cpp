@@ -4,15 +4,38 @@
 #include "audioThread.h"
 #include <fstream>
 #include <vector>
+extern const std::string path;
+#ifdef _WIN32
+    const std::string path = "tmp";
+	const std::string tokenPath = "";
+#elif __linux__
+	#include<stdlib.h>
+    const std::string path = "/tmp/discordBot";
+	const std::string tokenPath = std::string(getenv("HOME")) + "/.config/ytdsbot/";
+	
+#endif
 
 std::string getToken(){
-	if(!std::filesystem::exists("BOT_TOKEN")){
-		std::cout << "file BOT_TOKEN was not found" << std::endl;
-		std::cout << "press any key to exit" << std::endl;
-		std::cin.get();
-		exit(0);
+	if(!std::filesystem::exists(tokenPath + "BOT_TOKEN")){
+		if(!std::filesystem::exists(tokenPath)){
+			std::filesystem::create_directory(tokenPath);
+		}
+		std::cout << "file BOT_TOKEN was not found , please place one inside " + tokenPath << std::endl;
+		std::cout << "Press enter to exit, or enter bot key here and continue" << std::endl;
+		std::string key;
+		std::getline(std::cin,key);
+		if(key.empty()){
+			exit(0);
+		}
+		else{
+			std::fstream file(tokenPath+"BOT_TOKEN",std::fstream::trunc | std::fstream::in | std::fstream::out);
+			file << key;
+			file.close();
+
+		}
+		
 	}
-	std::fstream file("BOT_TOKEN");
+	std::fstream file(tokenPath + "BOT_TOKEN");
 	std::string line;
 	std::getline(file,line);
 	return line;
@@ -22,15 +45,10 @@ const std::string BOT_TOKEN = getToken();
 //Global declaration of a bot vairable
 extern dpp::cluster bot;
 dpp::cluster bot(BOT_TOKEN, dpp::i_default_intents | dpp::i_message_content);
-extern const std::string path;
+
 //variable with stores audioThreads for every server
 extern std::map<std::string,AudioThread> audioPerServer;
 std::map<std::string,AudioThread> audioPerServer;
-#ifdef _WIN32
-    const std::string path = "tmp";
-#elif __linux__
-    const std::string path = "/tmp/discordBot";
-#endif
 
 
 int main(int argc, char *argv[]) {

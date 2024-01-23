@@ -126,10 +126,11 @@ void AudioThread::run(const dpp::slashcommand_t& event)
 				killNeeded = 1;
 				return;
 			}
-			//if we send all at once the bot will stop responding on commands for a  very long time(depends on size of a file)
-			//so we sending it by a chunks. Value of a chunkLength was getted by  11520*320
-			// 11520 from a send_audio_raw description and 320 because lower values cause audio to stutter at some points
+			//we need to stop playing audio after it's finished to break cycle
 			if(!fullPlayed){
+				//if we send all at once the bot will stop responding on commands for a  very long time(depends on size of a file)
+				//so we sending it by a chunks. Value of a chunkLength was getted by  11520*320
+				// 11520 from a send_audio_raw description and 320 because lower values cause audio to stutter at some points
 				if(pos+chunkLength <pcmdata.size()){
 					std::vector<uint8_t> pcdata(pcmdata.begin()+ pos ,pcmdata.begin()+pos+chunkLength);
 					vc->send_audio_raw((uint16_t*)pcdata.data(), pcdata.size());
