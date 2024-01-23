@@ -17,7 +17,7 @@ sudo chmod a+rx /usr/local/bin/yt-dlp
 ## Installation
 [Download](https://github.com/SAANN3/YouTubeDiscordBot/releases) a linux binary or windows zip archive 
 ## Usage
-On start of a program it tries to find a BOT_TOKEN file, if it couldn't then its ask you to either enter bot_token retrieved from [here](https://discord.com/developers/applications/) inside console or manually place a file.
+On start of a program it tries to find a BOT_TOKEN file, if it couldn't then its ask you to either enter bot_token retrieved from [here](https://discord.com/developers/applications/) in console or manually place a file.
 
 For first time only after placing token you should launch program with ``` -s ``` argument to register bot commands
 
