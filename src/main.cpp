@@ -17,9 +17,12 @@ extern const std::string path;
 
 std::string getToken(){
 	if(!std::filesystem::exists(tokenPath + "BOT_TOKEN")){
-		if(!std::filesystem::exists(tokenPath)){
-			std::filesystem::create_directory(tokenPath);
+		if (!tokenPath.empty()) {
+			if (!std::filesystem::exists(tokenPath)) {
+				std::filesystem::create_directory(tokenPath);
+			}
 		}
+		
 		std::cout << "file BOT_TOKEN was not found , please place one inside " + tokenPath << std::endl;
 		std::cout << "Press enter to exit, or enter bot key here and continue" << std::endl;
 		std::string key;
